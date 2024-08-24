@@ -59,8 +59,8 @@ my %color = (
 
 sub rrd_graph(@)
 {
-	my ($range, $file, $ypoints, @rrdargs) = @_;
-	my $step = $range*$points_per_sample/$xpoints;
+	my ($range, $file, $ypoints, $verticalLabel, @rrdargs) = @_;
+	my $step = $range * $points_per_sample / $xpoints;
 	# choose carefully the end otherwise rrd will maybe pick the wrong RRA:
 	my $end  = time; $end -= $end % $step;
 	my $date = localtime(time);
@@ -72,7 +72,7 @@ sub rrd_graph(@)
 		'--height', $ypoints,
 		'--start', "-$range",
 		'--end', $end,
-		'--vertical-label', 'msgs/min',
+		'--vertical-label', $verticalLabel,
 		'--lower-limit', 0,
 		'--units-exponent', 0, # don't show milli-messages/s
 		'--lazy',
@@ -96,7 +96,7 @@ sub graph($$)
 {
 	my ($range, $file) = @_;
 	my $step = $range*$points_per_sample/$xpoints;
-	rrd_graph($range, $file, $ypoints,
+	rrd_graph($range, $file, $ypoints, "msgs/min",
 		"DEF:sent=$rrd:sent:AVERAGE",
 		"DEF:msent=$rrd:sent:MAX",
 		"CDEF:rsent=sent,60,*",
@@ -126,7 +126,7 @@ sub graph_err($$)
 {
 	my ($range, $file) = @_;
 	my $step = $range*$points_per_sample/$xpoints;
-	rrd_graph($range, $file, $ypoints_err,
+	rrd_graph($range, $file, $ypoints_err, "msgs/min",
 		"DEF:bounced=$rrd:bounced:AVERAGE",
 		"DEF:mbounced=$rrd:bounced:MAX",
 		"CDEF:rbounced=bounced,60,*",
@@ -179,7 +179,7 @@ sub graph_spf($$)
 {
 	my ($range, $file) = @_;
 	my $step = $range*$points_per_sample/$xpoints;
-	rrd_graph($range, $file, $ypoints_spf,
+	rrd_graph($range, $file, $ypoints_spf, "msgs/min",
 		"DEF:spfpass=$rrd:spfpass:AVERAGE",
 		"DEF:mspfpass=$rrd:spfpass:MAX",
 		"CDEF:rspfpass=spfpass,60,*",
@@ -220,7 +220,7 @@ sub graph_dmarc($$)
 {
 	my ($range, $file) = @_;
 	my $step = $range*$points_per_sample/$xpoints;
-	rrd_graph($range, $file, $ypoints_dmarc,
+	rrd_graph($range, $file, $ypoints_dmarc, "msgs/min",
 		"DEF:dmarcpass=$rrd:dmarcpass:AVERAGE",
 		"DEF:mdmarcpass=$rrd:dmarcpass:MAX",
 		"CDEF:rdmarcpass=dmarcpass,60,*",
@@ -261,7 +261,7 @@ sub graph_dkim($$)
 {
 	my ($range, $file) = @_;
 	my $step = $range*$points_per_sample/$xpoints;
-	rrd_graph($range, $file, $ypoints_dkim,
+	rrd_graph($range, $file, $ypoints_dkim, "msgs/min",
 		"DEF:dkimpass=$rrd:dkimpass:AVERAGE",
 		"DEF:mdkimpass=$rrd:dkimpass:MAX",
 		"CDEF:rdkimpass=dkimpass,60,*",
@@ -303,7 +303,7 @@ sub graph_dovecot($$)
 	my ($range, $file) = @_;
 	my $step = $range * $points_per_sample / $xpoints;
 	
-	rrd_graph($range, $file, $ypoints_dovecot,
+	rrd_graph($range, $file, $ypoints_dovecot, "logins/min",
 		"DEF:dovecotloginsuccess=$rrd_dovecot:dovecotloginsuccess:AVERAGE",
 		"DEF:mdovecotloginsuccess=$rrd_dovecot:dovecotloginsuccess:MAX",
 		"CDEF:rdovecotloginsuccess=dovecotloginsuccess,60,*",
